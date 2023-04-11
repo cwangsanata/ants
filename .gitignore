@@ -1,2 +1,6 @@
 # Image files
 img/
+
+#
+__pycache__/
+.pyc
