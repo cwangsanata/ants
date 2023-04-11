@@ -64,15 +64,6 @@ class Place:
     def __str__(self):
         return self.name
 
-class Water(Place):
-    """A water place for only certain watersafe insects."""
-
-    """Adds insect to water place. Armor is reduced to 0 if not watersafe."""
-    def add_insect(self, insect):
-        Place.add_insect(self, insect)
-        if not insect.watersafe:
-            insect.reduce_armor(insect.armor)
-
 class Insect:
     """An Insect, the base class of Ant and Bee, has armor and a Place."""
 
@@ -458,7 +449,9 @@ class Water(Place):
     def add_insect(self, insect):
         """Add insect if it is watersafe, otherwise reduce its armor to 0."""
         print('added', insect, insect.watersafe)
-        "*** YOUR CODE HERE ***"
+        Place.add_insect(self, insect)
+        if not insect.watersafe:
+            insect.reduce_armor(insect.armor)
 
 
 class FireAnt(Ant):
