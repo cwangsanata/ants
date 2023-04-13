@@ -172,7 +172,6 @@ def random_or_none(l):
     """Return a random element of list l, or return None if l is empty."""
     return random.choice(l) if l else None
 
-
 class ThrowerAnt(Ant):
     """ThrowerAnt throws a leaf each turn at the nearest Bee in its range."""
 
@@ -180,6 +179,8 @@ class ThrowerAnt(Ant):
     implemented = True
     damage = 1
     food_cost = 4
+    min_range = 0
+    max_range = 10
 
     def nearest_bee(self, hive):
         """Return the nearest Bee in a Place that is not the Hive, connected to
@@ -188,9 +189,16 @@ class ThrowerAnt(Ant):
         This method returns None if there is no such Bee.
 
         Problem B5: This method returns None if there is no Bee in range.
-        """
-        "*** YOUR CODE HERE ***"
-        return random_or_none(self.place.bees)
+        """     
+        current_place = self.place
+        bees = None
+        distance = 0
+
+        while current_place != hive and not bees:
+            if current_place.bees and self.min_range <= distance <= self.max_range:
+                return random_or_none(current_place.bees)
+            distance += 1
+            current_place = current_place.entrance
 
     def throw_at(self, target):
         """Throw a leaf at the target Bee, reducing its armor."""
@@ -476,16 +484,18 @@ class LongThrower(ThrowerAnt):
     """A ThrowerAnt that only throws leaves at Bees at least 4 places away."""
 
     name = 'Long'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 3
+    min_range = 4
+    implemented = True
 
 
 class ShortThrower(ThrowerAnt):
     """A ThrowerAnt that only throws leaves at Bees within 3 places."""
 
     name = 'Short'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 3
+    max_range = 2
+    implemented = True
 
 
 class WallAnt(Ant):
