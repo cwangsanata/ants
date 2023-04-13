@@ -541,17 +541,25 @@ class HungryAnt(Ant):
     """
     name = 'Hungry'
     food_cost = 4
-    implemented = False
+    time_to_digest = 3
+    digesting = 0
+    implemented = True
 
     def __init__(self):
-        Ant.__init__(self)
-        "*** YOUR CODE HERE ***"
+        Ant.__init__(self, armor=1)
+        self.digesting = 0
 
     def eat_bee(self, bee):
-        "*** YOUR CODE HERE ***"
+        bee.reduce_armor(bee.armor)
+        self.digesting = self.time_to_digest
 
     def action(self, colony):
-        "*** YOUR CODE HERE ***"
+        if self.digesting > 0:
+            self.digesting -= 1
+        else:
+            random_bee = random_or_none(self.place.bees)
+            if random_bee:
+                self.eat_bee(random_bee)
 
 
 class BodyguardAnt(Ant):
