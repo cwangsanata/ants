@@ -617,7 +617,7 @@ class QueenAnt(ScubaThrower):
     name = 'Queen'
     food_cost = 6
     instance = 0
-    implemented = False
+    implemented = True
 
     def __init__(self):
         ScubaThrower.__init__(self, armor=1)
@@ -626,7 +626,13 @@ class QueenAnt(ScubaThrower):
         
     def action(self, colony):
         """A queen ant throws a leaf, but also doubles the damage of ants
-        in her tunnel.  Impostor queens do only one thing: die."""
+        in her tunnel. Impostor queens do only one thing: die."""
+        def double_damage(ant):
+            if isinstance(ant, QueenAnt) and ant.true_queen:
+                return
+            ant.damage *= 2
+            ant.boosted = True
+                
         if not self.true_queen:
             self.reduce_armor(self.armor)
         else:
@@ -635,12 +641,9 @@ class QueenAnt(ScubaThrower):
             while place.exit is not None:
                 place = place.exit
                 if place.ant and not place.ant.boosted:
-                    place.ant.damage *= 2
-                    place.ant.boosted = True
+                    double_damage(place.ant)
                     if place.ant.container and place.ant.ant is not None:
-                        place.ant.ant.damage *= 2
-                        place.ant.ant.boosted = True
-
+                        double_damage(place.ant.ant)
 
 class AntRemover(Ant):
     """Allows the player to remove ants from the board in the GUI."""
@@ -651,52 +654,52 @@ class AntRemover(Ant):
     def __init__(self):
         Ant.__init__(self, 0)
 
-
+# Didn't feel like it :()
 ##################
 # Status Effects #
 ##################
 
-def make_slow(action):
-    """Return a new action method that calls action every other turn.
+# def make_slow(action):
+#     """Return a new action method that calls action every other turn.
 
-    action -- An action method of some Bee
-    """
-    "*** YOUR CODE HERE ***"
+#     action -- An action method of some Bee
+#     """
+#     "*** YOUR CODE HERE ***"
 
-def make_stun(action):
-    """Return a new action method that does nothing.
+# def make_stun(action):
+#     """Return a new action method that does nothing.
 
-    action -- An action method of some Bee
-    """
-    "*** YOUR CODE HERE ***"
+#     action -- An action method of some Bee
+#     """
+#     "*** YOUR CODE HERE ***"
 
-def apply_effect(effect, bee, duration):
-    """Apply a status effect to a Bee that lasts for duration turns."""
-    "*** YOUR CODE HERE ***"
-
-
-class SlowThrower(ThrowerAnt):
-    """ThrowerAnt that causes Slow on Bees."""
-
-    name = 'Slow'
-    "*** YOUR CODE HERE ***"
-    implemented = False
-
-    def throw_at(self, target):
-        if target:
-            apply_effect(make_slow, target, 3)
+# def apply_effect(effect, bee, duration):
+#     """Apply a status effect to a Bee that lasts for duration turns."""
+#     "*** YOUR CODE HERE ***"
 
 
-class StunThrower(ThrowerAnt):
-    """ThrowerAnt that causes Stun on Bees."""
+# class SlowThrower(ThrowerAnt):
+#     """ThrowerAnt that causes Slow on Bees."""
 
-    name = 'Stun'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+#     name = 'Slow'
+#     "*** YOUR CODE HERE ***"
+#     implemented = False
 
-    def throw_at(self, target):
-        if target:
-            apply_effect(make_stun, target, 1)
+#     def throw_at(self, target):
+#         if target:
+#             apply_effect(make_slow, target, 3)
+
+
+# class StunThrower(ThrowerAnt):
+#     """ThrowerAnt that causes Stun on Bees."""
+
+#     name = 'Stun'
+#     "*** YOUR CODE HERE ***"
+#     implemented = False
+
+#     def throw_at(self, target):
+#         if target:
+#             apply_effect(make_stun, target, 1)
 
 @main
 def run(*args):
