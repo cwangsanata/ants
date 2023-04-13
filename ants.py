@@ -121,10 +121,11 @@ class Bee(Insect):
         place.add_insect(self)
 
     def blocked(self):
-        """Return True if this Bee cannot advance to the next Place."""
+        """Return True if this Bee cannot advance to the next Place or the
+        ant has a blocks_path attribute."""
+
         # Phase 2: Special handling for NinjaAnt
-        "*** YOUR CODE HERE ***"
-        return self.place.ant is not None
+        return self.place.ant is not None and self.place.ant.blocks_path
 
     def action(self, colony):
         """A Bee's action stings the Ant that blocks its exit if it is blocked,
@@ -145,6 +146,7 @@ class Ant(Insect):
     implemented = False  # Only implemented Ant classes should be instantiated
     damage = 0
     food_cost = 0
+    blocks_path = True
 
     def __init__(self, armor=1):
         """Create an Ant with an armor quantity."""
@@ -502,12 +504,11 @@ class WallAnt(Ant):
     """WallAnt is an Ant which has a large amount of armor."""
 
     name = 'Wall'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 4
+    implemented = True
 
-    def __init__(self):
-        "*** YOUR CODE HERE ***"
-        Ant.__init__(self)
+    def __init__(self, armor=4):
+        Ant.__init__(self, armor)
 
 
 class NinjaAnt(Ant):
@@ -515,19 +516,23 @@ class NinjaAnt(Ant):
     all Bees in the exact same Place."""
 
     name = 'Ninja'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 6
+    damage = 1
+    blocks_path = False
+    implemented = True
 
     def action(self, colony):
-        "*** YOUR CODE HERE ***"
+        for bee in self.place.bees[:]:
+            bee.reduce_armor(self.damage)
 
 
 class ScubaThrower(ThrowerAnt):
     """ScubaThrower is a ThrowerAnt which is watersafe."""
 
     name = 'Scuba'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 5
+    watersafe = True
+    implemented = True
 
 
 class HungryAnt(Ant):
@@ -535,7 +540,7 @@ class HungryAnt(Ant):
     While eating, the HungryAnt can't eat another Bee.
     """
     name = 'Hungry'
-    "*** YOUR CODE HERE ***"
+    food_cost = 4
     implemented = False
 
     def __init__(self):
