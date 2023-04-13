@@ -42,7 +42,6 @@ class Place:
         There can be any number of Bees in a Place.
         """
         if insect.is_ant():
-            # Phase 2: Special handling for BodyguardAnt
             if self.ant is None:
                 self.ant = insect
             else:
@@ -628,7 +627,7 @@ class QueenAnt(ScubaThrower):
         """A queen ant throws a leaf, but also doubles the damage of ants
         in her tunnel. Impostor queens do only one thing: die."""
         def double_damage(ant):
-            if isinstance(ant, QueenAnt) and ant.true_queen:
+            if isinstance(ant, QueenAnt):
                 return
             ant.damage *= 2
             ant.boosted = True
@@ -636,6 +635,7 @@ class QueenAnt(ScubaThrower):
         if not self.true_queen:
             self.reduce_armor(self.armor)
         else:
+            ScubaThrower.action(self, colony)
             colony.queen = QueenPlace(colony.queen, self.place)
             place = self.place
             while place.exit is not None:
