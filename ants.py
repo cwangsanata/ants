@@ -63,7 +63,10 @@ class Place:
             self.bees.remove(insect)
         else:
             assert self.ant == insect, '{0} is not in {1}'.format(insect, self)
-            if self.ant.container:
+            if self.ant.name == 'Queen' and self.ant.true_queen:
+                self.ant.true_queen = False
+                return
+            elif self.ant.container:
                 self.ant = self.ant.ant
             else:
                 self.ant = None
@@ -157,6 +160,7 @@ class Ant(Insect):
     food_cost = 0
     blocks_path = True
     container = False
+    boosted = False
 
     def __init__(self, armor=1):
         """Create an Ant with an armor quantity."""
@@ -600,27 +604,43 @@ class QueenPlace:
     (2) The place in which the QueenAnt resides.
     """
     def __init__(self, colony_queen, ant_queen):
-        "*** YOUR CODE HERE ***"
+        self.colony_queen = colony_queen
+        self.ant_queen = ant_queen
 
     @property
     def bees(self):
-        "*** YOUR CODE HERE ***"
+        return self.colony_queen.bees + self.ant_queen.bees
 
 class QueenAnt(ScubaThrower):
     """The Queen of the colony.  The game is over if a bee enters her place."""
 
     name = 'Queen'
-    "*** YOUR CODE HERE ***"
+    food_cost = 6
+    instance = 0
     implemented = False
 
     def __init__(self):
-        ScubaThrower.__init__(self, 1)
-        "*** YOUR CODE HERE ***"
-
+        ScubaThrower.__init__(self, armor=1)
+        self.true_queen = QueenAnt.instance == 0
+        QueenAnt.instance += 1
+        
     def action(self, colony):
         """A queen ant throws a leaf, but also doubles the damage of ants
         in her tunnel.  Impostor queens do only one thing: die."""
-        "*** YOUR CODE HERE ***"
+        if not self.true_queen:
+            self.reduce_armor(self.armor)
+        else:
+            colony.queen = QueenPlace(colony.queen, self.place)
+            place = self.place
+            while place.exit is not None:
+                place = place.exit
+                if place.ant and not place.ant.boosted:
+                    place.ant.damage *= 2
+                    place.ant.boosted = True
+                    if place.ant.container and place.ant.ant is not None:
+                        place.ant.ant.damage *= 2
+                        place.ant.ant.boosted = True
+
 
 class AntRemover(Ant):
     """Allows the player to remove ants from the board in the GUI."""
