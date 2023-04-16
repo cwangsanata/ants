@@ -153,7 +153,7 @@ class Bee(Insect):
 
 class Ant(Insect):
     """An Ant occupies a place and does work for the colony."""
-
+    name = ''
     implemented = False  # Only implemented Ant classes should be instantiated
     damage = 0
     food_cost = 0
